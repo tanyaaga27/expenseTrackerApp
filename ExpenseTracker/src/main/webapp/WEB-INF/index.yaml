@@ -1,0 +1,7 @@
+indexes:
+
+  - kind: expense
+    properties:
+      - name: date
+        direction: asc
+     
