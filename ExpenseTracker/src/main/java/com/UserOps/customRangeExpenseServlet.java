@@ -3,6 +3,8 @@ package com.UserOps;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,9 +20,29 @@ public class customRangeExpenseServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException
 	{
 		PrintWriter out = res.getWriter();
+		try {
+			
 		String startDateString = req.getParameter("startdate");
 		String endDateString = req.getParameter("enddate");
 		
+		
+		Date todaydate = new Date();
+		String todaydateString = new SimpleDateFormat("yyyy-MM-dd").format(todaydate);
+		todaydate = new SimpleDateFormat("yyyy-MM-dd").parse(todaydateString);
+		
+		Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateString);
+		Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDateString);
+		
+		if(startDate.compareTo(endDate)>0)
+		{
+			out.println("Please provide a valid range! Start date should be less than end date");
+			return;
+		}
+		if(startDate.compareTo(todaydate)>0||endDate.compareTo(todaydate)>0)
+		{
+			out.println("Please Provide valid date inputs! Do not provide future dates!");
+			return;
+		}
 		
 		Iterable<Entity> list = UserOperations.customRangeExpense(startDateString, endDateString);
 		
@@ -30,11 +52,11 @@ public class customRangeExpenseServlet extends HttpServlet {
 			return;
 		}
 		
-		int sum = 0;
+		float sum = 0;
 		for(Entity e : list)
 		{
 			String amountString = e.getProperty("amount").toString();
-			sum = sum + Integer.parseInt(amountString);
+			sum = sum + Float.parseFloat(amountString);
 		}
 		if(sum!=0)
 		{
@@ -44,6 +66,10 @@ public class customRangeExpenseServlet extends HttpServlet {
 	    {
 	    	out.print("No expenses were made in this time period!");
 	    }
+		}catch(ParseException e)
+		{
+			out.println("Error occured while parsing the date!");
+		}
 	}
 	
 	

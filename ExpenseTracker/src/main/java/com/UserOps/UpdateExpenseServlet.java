@@ -2,6 +2,9 @@ package com.UserOps;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,37 +24,59 @@ public class UpdateExpenseServlet extends HttpServlet{
 	{
 		PrintWriter out = res.getWriter();  
 		
-		String title = req.getParameter("title");
-		String amount = req.getParameter("amount");
-		String category = req.getParameter("category");
-		String stringdate = req.getParameter("date");
-		String notes = req.getParameter("notes");
-		
-		boolean flag = UserOperations.addorUpdateExpense(title, amount, category, stringdate, notes);
-		if(flag==true)
-		{
-			out.print("Entry Updated Successfully!");
-		}
-		
-		/*Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
-		String title = req.getParameter("title");
-		String amount = req.getParameter("amount");
-		String category = req.getParameter("category");
-		String date = req.getParameter("date");
-		KeyFactory keyFactory = datastore.newKeyFactory().setKind("expense");
-		Key key = keyFactory.newKey(title);
-		Entity entity = datastore.get(key);
-		if(entity!=null)
-		{
-			entity = Entity.newBuilder(key).set("title",title).set("amount",amount).set("category",category).set("date",date).build();
-			datastore.update(entity);
-			out.println("Entry Updated Successfully");
-		}
-		else
-		{
-			out.println("Entry Not Found!");
-		}
-		*/
+		try {
+			String title = req.getParameter("title");
+			String Stringamount = req.getParameter("amount");
+			String category = req.getParameter("category");
+			String stringdate = req.getParameter("date");
+			Date date = new SimpleDateFormat("yyyy-MM-dd").parse(stringdate);
+			
+			if(title==null)
+			{
+				out.println("Please provide title!");
+				return;
+			}
+			else if(Stringamount==null)
+			{
+				out.println("Please provide amount!");
+				return;
+			}
+			else if(category==null)
+			{
+				out.println("Provide provide category!");
+				return;
+			}
+			else if(stringdate==null)
+			{
+				out.println("Please provide date!");
+				return;
+			}
+			
+			float amount = Float.parseFloat(Stringamount);
+			Date todaydate = new Date();
+			String todaydateString = new SimpleDateFormat("yyyy-MM-dd").format(todaydate);
+			todaydate = new SimpleDateFormat("yyyy-MM-dd").parse(todaydateString);
+			if(date.compareTo(todaydate)>0)
+			{
+				out.println("Please provide a valid date input");
+				return;
+			}
+			String notes = req.getParameter("notes");
+			boolean flag = UserOperations.addorUpdateExpense(title, amount, category, stringdate, notes);
+			
+			if(flag==true)
+			{
+				out.print("Entry added Successfully!");
+			}
+			
+			}catch(NumberFormatException e)
+			{
+				out.println("Invalid Input! Please Provide an integer value for amount");
+				
+			}catch(ParseException e)
+			{
+				out.println("Error occured while parsing the date!");
+			}
 		
 	}
 

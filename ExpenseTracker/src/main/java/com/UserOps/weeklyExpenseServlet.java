@@ -29,11 +29,11 @@ public class weeklyExpenseServlet extends HttpServlet {
 				return;
 			}
 			
-			int sum = 0;
+			float sum = 0;
 			for(Entity e : list)
 			{
 				String amountString = e.getProperty("amount").toString();
-				sum = sum + Integer.parseInt(amountString);
+				sum = sum + Float.parseFloat(amountString);
 			}
 			if(sum!=0)
 			{

@@ -21,12 +21,12 @@ public class CalDailyExpenseServlet extends HttpServlet {
 		
 		PrintWriter out = res.getWriter();
 		
-		int sum = 0;
+		float sum = 0;
 		Iterable<Entity> list = UserOperations.CalDailyExpense();
 		for(Entity e : list)
 		{
 			String amountString = e.getProperty("amount").toString();
-			sum = sum + Integer.parseInt(amountString);
+			sum = sum + Float.parseFloat(amountString);
 		}
 	    
 	    if(sum!=0)

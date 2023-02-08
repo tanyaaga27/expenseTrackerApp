@@ -11,26 +11,31 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.appengine.api.datastore.Query.CompositeFilterOperator;
 import com.google.appengine.api.datastore.Query.Filter;
 import com.google.appengine.api.datastore.Query.FilterOperator;
 import com.google.appengine.api.datastore.Query.FilterPredicate;
-
+import com.google.appengine.api.datastore.FetchOptions;
 
 public class UserOperations {
 	static DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 	
-	public static boolean addorUpdateExpense(String title,String amount,String category,String dateString,String notes) 
+	
+	
+	
+	public static boolean addorUpdateExpense(String title,float amount,String category,String dateString,String notes) throws ParseException 
 	{
 		
-		Entity entity = new Entity("expense", title);
+	
+		
+		Entity entity = new Entity("expense",title);
 		entity.setProperty("title", title);
-		entity.setProperty("amount", Integer.parseInt(amount));
+		entity.setProperty("amount", amount);
 		entity.setProperty("category", category);
 		Date date;
-		try {
 			date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
 			System.out.println(date);
             entity.setProperty("date", date);
@@ -41,12 +46,6 @@ public class UserOperations {
             datastore.put(entity);
 			return true;
 			
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		return false;
-	
 	}
 	
 	public static boolean deleteExpense(String title)
@@ -66,7 +65,8 @@ public class UserOperations {
 	public static Iterable<Entity> viewAllExpenses()
 	{
 		Query query = new Query("expense");
-		Iterable<Entity> list = datastore.prepare(query).asIterable();
+		PreparedQuery pq = datastore.prepare(query);
+		Iterable<Entity> list = pq.asIterable(FetchOptions.Builder.withLimit(10));
 		return list;
 		
 	}
