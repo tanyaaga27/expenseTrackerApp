@@ -5,3 +5,7 @@ indexes:
       - name: date
         direction: asc
      
+  - kind: userDetails
+    properties:
+      - name: email
+      - name: password
